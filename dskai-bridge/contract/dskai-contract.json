@@ -1,0 +1,485 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "audit_method": "verified by operation (live tool calls, code reads, health probes); nothing inferred from names alone",
+  "audited": "2026-10-09",
+  "backend": {
+    "rendering": "Muse-side only. External parties can never render directly; a Muse worker must claim and execute. This is a fixed platform property.",
+    "storage": {
+      "durable": true,
+      "expiry": "none on local files",
+      "location": "~/workspace/tools/dskai-studio/projects/<project>/episodes/<ch>/videos/",
+      "note": "Local disk only, no replication. /tmp is ephemeral. Internal absolute paths must never be exposed as accessible references.",
+      "retrieval": [
+        "GET /files/<relpath> \u2014 Bearer required; roots limited to projects/, e2e/, tests/; extension allowlist; traversal blocked",
+        "dskai_fetch_video / dskai_fetch_image \u2014 expiring Muse-storage URLs (TTL service-side, unknown)"
+      ]
+    },
+    "tool_catalog": {
+      "count": 46,
+      "director_tools": [
+        "dskai_submit_script",
+        "dskai_prepare_shots",
+        "dskai_launch_generation",
+        "dskai_execute_generation",
+        "dskai_submit_revision",
+        "dskai_request_correction",
+        "dskai_export_video",
+        "dskai_fetch_results",
+        "dskai_job_status",
+        "dskai_read_manifest",
+        "dskai_manifest_diff",
+        "dskai_wait_for_job",
+        "dskai_upload_image",
+        "dskai_import_image_url",
+        "dskai_fetch_image",
+        "dskai_fetch_video",
+        "dskai_timeline",
+        "dskai_execute_post",
+        "dskai_run_qc_auto",
+        "dskai_submit_audio_qc",
+        "dskai_analyze_audio",
+        "dskai_get_budget",
+        "dskai_get_capabilities",
+        "dskai_list_engines",
+        "dskai_compare_engines",
+        "dskai_bible",
+        "dskai_frames",
+        "dskai_continuity",
+        "dskai_build_animatic",
+        "dskai_edit_storyboard",
+        "dskai_set_screen_direction",
+        "dskai_set_voice_profile",
+        "dskai_set_voice_alias",
+        "dskai_create_voice_preview",
+        "dskai_fetch_voice_preview",
+        "dskai_edit_pronunciation",
+        "dskai_get_voice_profile",
+        "dskai_share_character",
+        "dskai_build_character",
+        "dskai_create_project",
+        "dskai_record_decision",
+        "dskai_get_status",
+        "dskai_get_kreyol_guide",
+        "dskai_dashboard",
+        "dskai_health"
+      ],
+      "note": "REMOTE_AUTH.md claim of '17 tools' is stale."
+    }
+  },
+  "cancellation": {
+    "available": false,
+    "workaround": "Mark the request DEFERRED or BLOCKED, or submit a new prompt_revision. There is no cancel/abort tool and notifications/cancelled is ignored."
+  },
+  "channel": {
+    "branch": "main",
+    "dirs": {
+      "claims": "dskai-bridge/claims/",
+      "requests": "dskai-bridge/requests/",
+      "results": "dskai-bridge/results/"
+    },
+    "polling": "Worker polls the repo on ~2-minute cadence. No webhook exists; polling is the verified path.",
+    "repo": "sanemelj/OpenMontage-Dskai",
+    "single_writer_assumption": "Exactly one worker claims and executes. Claims are idempotent via request_id; reconcile backend job state before resubmission."
+  },
+  "claim_lease_minutes": 30,
+  "claim_schema": {
+    "properties": {
+      "claimed_at": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "lease_until": {
+        "description": "Worker refreshes via heartbeat while active; reclaim allowed after expiry.",
+        "format": "date-time",
+        "type": "string"
+      },
+      "prompt_revision_claimed": {
+        "type": "integer"
+      },
+      "request_id": {
+        "type": "string"
+      },
+      "worker_id": {
+        "const": "kai-muse",
+        "type": "string"
+      }
+    },
+    "required": [
+      "request_id",
+      "worker_id",
+      "claimed_at",
+      "lease_until"
+    ],
+    "type": "object"
+  },
+  "description": "Machine-readable contract between the external director (Codex/Claude Code, using OpenMontage skills) and the Muse-side worker (Kai) executing generation through DSKAI STUDIO / media-pipeline. GitHub repo sanemelj/OpenMontage-Dskai/dskai-bridge/ is the versioned instruction/result channel.",
+  "e2e_validation": "PENDING \u2014 one real end-to-end test not yet run; evidence will land in dskai-bridge/tests/",
+  "engine_constraints": {
+    "aspect_ratio": {
+      "status": "UNSUPPORTED_PARAMETER",
+      "value": "Native output 1152x768 measured; no resolution/aspect parameter exists."
+    },
+    "audio_editing": {
+      "status": "UNSUPPORTED_TOOL",
+      "value": "No dedicated audio-edit tool. Available: voice previews, audio analysis, audio-QC verdicts, score mix + -16 LUFS normalization inside export."
+    },
+    "billing_api": {
+      "status": "ABSENT",
+      "value": "dskai_get_budget is a generation-count ledger only; no cost API."
+    },
+    "cancellation": {
+      "status": "ABSENT",
+      "value": "No cancel/abort op. Use DEFERRED/BLOCKED states or a new prompt_revision."
+    },
+    "concurrent_render_capacity": {
+      "status": "UNKNOWN",
+      "value": "Design for serial execution. Independent shots may queue in parallel; measured concurrent-render limit unknown."
+    },
+    "dialogue_audio": {
+      "status": "SUPPORTED",
+      "value": "Native in-video dialogue+audio (AAC, measured non-silent). Dialogue is a manifest string field; separate voice-preview flow (real engine clip <=10s); every voice change resets approval."
+    },
+    "duration_per_generation": {
+      "status": "LIMITED",
+      "value": "<=10.0s measured per single generation. Longer content via chained 10s clips. Duration is a storyboard field, not a job-schema field."
+    },
+    "end_frame": {
+      "status": "UNSUPPORTED",
+      "value": "No end_frame input parameter; absent from job/manifest schemas."
+    },
+    "frame_extraction": {
+      "status": "AVAILABLE_VIA_FFMPEG",
+      "value": "Endframes extracted post-generation with ffmpeg (e.g. *_endframe_for_*_restage.jpg). No dedicated MCP extract-frame tool."
+    },
+    "multiple_reference_images": {
+      "status": "SUPPORTED_STILLS_ONLY",
+      "value": "references[] = [{character, view, sheet}]; still images only."
+    },
+    "start_frame": {
+      "status": "PARTIAL",
+      "value": "No true start-frame parameter. An approved start-frame image is attached as the primary image reference guiding the first frame."
+    },
+    "take_regeneration": {
+      "status": "FORBIDDEN",
+      "value": "DONE is terminal. register-shot enforces exactly one registered take. dskai_submit_revision (with recorded strategy_change) is the ONLY legal path to resume FAILED/BLOCKED/DEFERRED."
+    },
+    "transient_401_windows": {
+      "status": "EXPECTED",
+      "value": "dskai-https.py dies silently every ~2-3h (cause unproven, not OOM); keepalive restarts it. Clients MUST retry on 401/connection-refused with backoff."
+    },
+    "trimming": {
+      "status": "SUPPORTED",
+      "value": "dskai_timeline trim/split with in/out timecodes; render = pure ffmpeg cut/concat, no regeneration."
+    }
+  },
+  "implementation_status": "PENDING \u2014 bridge dirs, poll worker, and media wiring specified but not deployed",
+  "job_states": [
+    "PENDING",
+    "QUEUED",
+    "WAITING_ON_DEPENDENCY",
+    "ON_HOLD",
+    "CLAIMED",
+    "RENDERING",
+    "DONE",
+    "FAILED",
+    "DEFERRED",
+    "BLOCKED"
+  ],
+  "request_schema": {
+    "properties": {
+      "aspect_ratio": {
+        "description": "Requested framing. Engine has no aspect parameter (native 1152x768); worker returns BLOCKED with constraint if the brief requires otherwise.",
+        "type": "string"
+      },
+      "audio_input": {
+        "properties": {
+          "sha256": {
+            "type": "string"
+          },
+          "url": {
+            "description": "HTTPS URL the worker can fetch",
+            "type": "string"
+          }
+        },
+        "type": [
+          "object",
+          "null"
+        ]
+      },
+      "created_at": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "dependencies": {
+        "items": {
+          "properties": {
+            "continuity": {
+              "default": "independent",
+              "enum": [
+                "continuous_action",
+                "independent"
+              ],
+              "type": "string"
+            },
+            "cut_point_sec": {
+              "type": "number"
+            },
+            "request_id": {
+              "type": "string"
+            },
+            "take_version": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "request_id",
+            "take_version"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "dialogue": {
+        "description": "Exact spoken text. Never rewritten by the worker.",
+        "type": "string"
+      },
+      "director": {
+        "enum": [
+          "codex",
+          "claude-code"
+        ],
+        "type": "string"
+      },
+      "duration_sec": {
+        "description": "Requested clip duration. Engine limit: <=10s per generation; longer needs chained requests.",
+        "type": "number"
+      },
+      "format": {
+        "default": "mp4",
+        "enum": [
+          "mp4"
+        ],
+        "type": "string"
+      },
+      "priority": {
+        "default": "normal",
+        "enum": [
+          "low",
+          "normal",
+          "high"
+        ],
+        "type": "string"
+      },
+      "project": {
+        "description": "DSKAI project slug (existing canonical projects only unless director was told otherwise)",
+        "type": "string"
+      },
+      "prompt": {
+        "description": "Exact generation prompt. Executed verbatim.",
+        "type": "string"
+      },
+      "prompt_revision": {
+        "description": "Monotonic per (project, shot).",
+        "minimum": 1,
+        "type": "integer"
+      },
+      "qc_criteria": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "references": {
+        "description": "Still images only. Delivered as HTTPS URLs (worker fetches) or repo-relative paths.",
+        "items": {
+          "properties": {
+            "kind": {
+              "enum": [
+                "start_frame",
+                "end_frame",
+                "reference",
+                "character_sheet",
+                "style"
+              ],
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "url"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "request_id": {
+        "description": "Idempotency key (uuid). Never reused across distinct creative intents.",
+        "format": "uuid",
+        "type": "string"
+      },
+      "shot": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "request_id",
+      "project",
+      "shot",
+      "prompt_revision",
+      "prompt",
+      "duration_sec",
+      "aspect_ratio",
+      "created_at"
+    ],
+    "type": "object"
+  },
+  "result_schema": {
+    "properties": {
+      "backend_job_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "decided_at": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "errors": {
+        "items": {
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "constraint": {
+              "description": "Precise engine limit for the director to resolve",
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "media": {
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "media_base_url": {
+            "description": "Current tunnel base. Re-read this file; never cache.",
+            "type": "string"
+          },
+          "thumbnail_url": {
+            "type": "string"
+          },
+          "video_url": {
+            "description": "Authenticated HTTPS (Bearer). Valid while the tunnel lives.",
+            "type": "string"
+          }
+        },
+        "type": [
+          "object",
+          "null"
+        ]
+      },
+      "prompt_revision": {
+        "type": "integer"
+      },
+      "request_id": {
+        "type": "string"
+      },
+      "shot": {
+        "type": "string"
+      },
+      "status": {
+        "enum": [
+          "PENDING",
+          "QUEUED",
+          "WAITING_ON_DEPENDENCY",
+          "ON_HOLD",
+          "CLAIMED",
+          "RENDERING",
+          "DONE",
+          "FAILED",
+          "DEFERRED",
+          "BLOCKED"
+        ],
+        "type": "string"
+      },
+      "take": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "take_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          }
+        },
+        "type": [
+          "object",
+          "null"
+        ]
+      },
+      "usage": {
+        "properties": {
+          "cost_usd": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "worker_id": {
+        "const": "kai-muse",
+        "type": "string"
+      }
+    },
+    "required": [
+      "request_id",
+      "prompt_revision",
+      "status",
+      "decided_at"
+    ],
+    "type": "object"
+  },
+  "rules": [
+    "Worker never rewrites prompt/dialogue. Creative direction is the director's.",
+    "Worker never regenerates an accepted take. A creative change requires a new prompt_revision.",
+    "If an instruction exceeds engine capability, worker returns BLOCKED with errors[].constraint and does not guess.",
+    "Dependencies with continuity=continuous_action: worker waits for the predecessor's DONE, extracts the actual endframe of the selected take at cut_point_sec, and uses it as start_frame ONLY if supported; otherwise BLOCKED with the constraint.",
+    "If a predecessor's selected take changes, worker flags all dependent requests instead of silently continuing.",
+    "Concatenation never guarantees continuity. Worker returns actual media; continuity is the director's verdict.",
+    "Credentials never appear in the repo. The Bearer token travels out-of-band.",
+    "Media URLs are authenticated and tunnel-bound; re-read the result file for the current media_base_url.",
+    "No purchases, no publishing, no deletion of canonical work, no CLIENT_APPROVED marking by the worker.",
+    "On BLOCKED: report the exact observed failure plus the minimum action needed."
+  ],
+  "status": "VERIFIED 2026-10-09",
+  "title": "DSKAI STUDIO \u2014 Director/Worker Integration Contract",
+  "version": "1.0.0"
+}
