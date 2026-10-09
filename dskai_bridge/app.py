@@ -12,7 +12,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from .media import MediaCache
-from .models import Approval, Claim, Control, QC, Result, Selection, ShotRequest, Ack
+from .models import Approval, Claim, ContinuityReview, Control, QC, Result, Selection, ShotRequest, Ack
 from .store import Conflict, Store
 from .transport import TransportError
 
@@ -176,7 +176,7 @@ def create_app(store, passwords, origin, media_cache=None, backlot=True):
         role(request, "director")
         return {"created": store.add_request(body)}
 
-    command_types = {"qc": QC, "selection": Selection, "approval": Approval, "control": Control}
+    command_types = {"qc": QC, "selection": Selection, "approval": Approval, "control": Control, "continuity": ContinuityReview}
 
     @app.post("/studio/api/decisions/{kind}")
     async def decision(kind: str, request: Request):

@@ -75,13 +75,24 @@ function render() {
     const actions = node("div", null, card, "actions");
     const video = result?.media.find(m => m.mime === "video/mp4");
     if (session.role === "director") {
-      // Request digest is supplied only by a verified result/claim; never fabricate one.
-      const source = result || snapshot.claims.find(x => x.request_id === r.request_id);
+      // Digest comes from the server journal, never a client-side approximation.
+      const source = result || snapshot.claims.find(x => x.request_id === r.request_id) || {...r, request_sha256: snapshot.request_digests[r.request_id]};
       if (source) for (const action of ["HOLD", "RESUME"]) button(actions, action, async () => {
         const reason = prompt(action + " reason (queued intent; active renders cannot be cancelled)");
         if (reason) await record("control", {...binding(source), decision_id: crypto.randomUUID(), action, reason});
       });
       if (video) {
+        if (snapshot.flags.some(f => f.id === r.request_id && f.reason.startsWith("CONTINUITY_REVIEW_REQUIRED"))) {
+          button(actions, "Resolve continuity review", async () => {
+            if (!confirm("Have you watched the actual clips and current cut boundaries?")) return;
+            const findings = prompt("Explain why this existing take works with the changed predecessor cut, or cancel to keep it flagged.");
+            if (!findings) return;
+            const current = r.dependencies.map(d => snapshot.selections.find(s => ["project","chapter","scene","shot"].every(k => s[k] === d.predecessor[k])));
+            if (current.some(s => !s)) throw Error("Missing predecessor selection");
+            await record("continuity", {...binding(result), decision_id: crypto.randomUUID(), media_sha256:video.sha256,
+              current_selections:current, full_motion_reviewed:true, cut_boundaries_reviewed:true, findings:[findings]});
+          });
+        }
         button(actions, "Review take", () => {
           activeQC = {...binding(result), media_sha256: video.sha256};
           $("#qc-form").reset(); $("#qc-dialog").showModal();

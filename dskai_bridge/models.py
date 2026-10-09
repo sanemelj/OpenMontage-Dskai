@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StringConstraints, model_validator
 
 Slug = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$")]
 Digest = Annotated[str, StringConstraints(pattern=r"^[a-f0-9]{64}$")]
@@ -159,9 +159,9 @@ class Reviewed(Binding):
 class QC(Reviewed):
     decision_id: UUID
     verdict: Literal["ACCEPT", "REJECT", "NEEDS_REVIEW"]
-    full_motion_reviewed: bool
-    audio_listened: bool
-    cut_boundaries_reviewed: bool
+    full_motion_reviewed: StrictBool
+    audio_listened: StrictBool
+    cut_boundaries_reviewed: StrictBool
     findings: Annotated[list[Text], Field(min_length=1)]
     limitations: list[Text] = Field(default_factory=list)
 
@@ -217,3 +217,11 @@ def digest(model):
 
 def identity(model):
     return {k: data(model)[k] for k in Identity.model_fields}
+
+
+class ContinuityReview(Reviewed):
+    decision_id: UUID
+    current_selections: Annotated[list[Selection], Field(min_length=1)]
+    full_motion_reviewed: StrictBool
+    cut_boundaries_reviewed: StrictBool
+    findings: Annotated[list[Text], Field(min_length=1)]

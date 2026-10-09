@@ -16,7 +16,7 @@ from pydantic import ValidationError
 from dskai_bridge.app import create_app
 from dskai_bridge.media import MediaCache
 from dskai_bridge.models import (Ack, Approval, Claim, Control, Dependency, QC, Result,
-                                Selection, ShotRequest, canonical, data, digest, identity)
+                                Selection, ShotRequest, ContinuityReview, canonical, data, digest, identity)
 from dskai_bridge.store import Conflict, Store
 from dskai_bridge.transport import GitHub, Sync, TransportError
 
@@ -181,6 +181,35 @@ class JournalTests(unittest.TestCase):
         self.assertEqual(self.store.snapshot()["results"][0]["event_id"], str(result.event_id))
         self.assertIn("NEW_TAKE_MAPPING_REQUIRED", self.store.snapshot()["flags"][0]["reason"])
 
+    def test_continuity_can_be_reviewed_without_regenerating(self):
+        first = self.done()
+        self.store.decide(self.select(first), "director")
+        dep = Dependency(predecessor=identity(self.r), media_sha256=first.media[0].sha256,
+                         selection_revision=1, retained_frame_index=20, timebase_num=1,
+                         timebase_den=24, reference_sha256="1"*64)
+        child = shot(shot="child", relation="continuous_action", dependencies=[data(dep)])
+        self.store.add_request(child)
+        child_result = self.done(child)
+        selection = self.select(first, 2, 19)
+        self.store.decide(selection, "director")
+        review = ContinuityReview(**bound(child), media_sha256=child_result.media[0].sha256,
+                    decision_id=uuid4(), current_selections=[selection], full_motion_reviewed=True,
+                    cut_boundaries_reviewed=True, findings=["Synthetic continuity override"])
+        self.store.decide(review, "director")
+        self.assertFalse(self.store.snapshot()["flags"])
+        self.assertEqual(len(self.store.snapshot()["requests"]), 2)
+
+    def test_correction_claim_requires_new_backend_job(self):
+        prior = self.done()
+        r = shot(prompt_revision=2, take_version=2, supersedes=str(self.r.request_id), strategy_change="New action")
+        self.store.add_request(r)
+        now=time.time()
+        claim=Claim(**bound(r), fence=1, backend_job_id=prior.backend_job_id, heartbeat_at=now, lease_until=now+1800)
+        with self.assertRaises(Conflict):
+            self.store.ingest_claim(claim)
+        self.store.ingest_claim(claim.model_copy(update={"backend_job_id":"new-physical-job"}))
+        self.assertFalse(self.store.snapshot()["flags"])
+
 
 class TransportTests(unittest.TestCase):
     def test_unknown_put_outcome_reconciles_without_duplicate(self):
@@ -217,6 +246,46 @@ class TransportTests(unittest.TestCase):
                         httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(200,json={"private":False}))))
         with self.assertRaisesRegex(TransportError, "PRIVATE_OPERATIONAL_REPOSITORY_REQUIRED"):
             remote.private()
+
+    def test_sync_delivery_results_and_persisted_qc_roundtrip(self):
+        class FakeGitHub:
+            """In-memory fixture, never a real Muse adapter."""
+            def __init__(self): self.records = {}
+            def private(self): pass
+            def handshake(self): pass
+            def paths(self, directory): return [p for p in self.records if p.startswith(directory + "/")]
+            def read(self, path): return self.records.get(path)
+            def put_immutable(self, path, body):
+                if path in self.records and self.records[path] != body: raise Conflict("changed")
+                self.records[path] = body
+        with tempfile.TemporaryDirectory() as tmp:
+            store=Store(Path(tmp)/"s.db")
+            request=shot()
+            store.add_request(request)
+            remote=FakeGitHub()
+            sync=Sync(store,remote)
+            self.assertTrue(sync.once())
+            self.assertFalse(store.pending())
+            now=time.time()
+            claim=Claim(**bound(request),fence=1,backend_job_id="synthetic-job",heartbeat_at=now,lease_until=now+1800)
+            result=Result(**bound(request),event_id=uuid4(),sequence=1,backend_job_id="synthetic-job",
+                          fence=1,status="DONE",media=[media()],observed_at=datetime.now(timezone.utc))
+            remote.records["dskai-bridge/claims/c.json"]=data(claim)
+            remote.records["dskai-bridge/results/r.json"]=data(result)
+            self.assertTrue(sync.once())
+            lease=store.claim_qc("test")
+            verdict=QC(**bound(request),media_sha256=result.media[0].sha256,decision_id=uuid4(),
+                       verdict="NEEDS_REVIEW",full_motion_reviewed=False,audio_listened=False,
+                       cut_boundaries_reviewed=False,findings=["Synthetic test: cannot inspect these bytes"],
+                       limitations=["No real video"])
+            store.decide(verdict,"director")
+            store.finish_qc_task(request.request_id,"test",lease["fence"])
+            self.assertTrue(sync.once())
+            self.assertIn("dskai-bridge/decisions/"+str(verdict.decision_id)+".json",remote.records)
+            reopened=Store(Path(tmp)/"s.db")
+            self.assertTrue(Sync(reopened,remote).once())
+            self.assertEqual(len(reopened.snapshot()["results"]),1)
+            self.assertEqual(len(reopened.snapshot()["director_tasks"]),1)
 
     def test_missing_handshake(self):
         remote = GitHub("owner/repo", "work", "secret",

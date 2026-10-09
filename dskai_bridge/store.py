@@ -9,7 +9,7 @@ import time
 from contextlib import contextmanager
 from pathlib import Path
 
-from .models import (Ack, Approval, Binding, Claim, Control, Identity, QC, Result,
+from .models import (Ack, Approval, Binding, Claim, ContinuityReview, Control, Identity, QC, Result,
                      Selection, ShotRequest, canonical, data, digest, identity)
 
 
@@ -111,6 +111,13 @@ class Store:
             old = c.execute("SELECT MAX(revision) FROM requests WHERE shot_key=?", (key,)).fetchone()[0]
             if old and r.prompt_revision <= old:
                 raise Conflict("prompt revision must increase")
+            if c.execute("SELECT 1 FROM requests WHERE json_extract(body,'$.take_id')=?",
+                         (str(r.take_id),)).fetchone():
+                raise Conflict("take ID must be unique")
+            versions = [json.loads(x[0])["take_version"] for x in
+                        c.execute("SELECT body FROM requests WHERE shot_key=?", (key,))]
+            if versions and r.take_version <= max(versions):
+                raise Conflict("take version must increase across all shot revisions")
             if old and not r.supersedes:
                 raise Conflict("existing shot needs explicit supersedes and strategy change")
             if r.supersedes:
@@ -149,7 +156,12 @@ class Store:
 
     def ingest_claim(self, claim: Claim):
         with self.db() as c:
-            self.bound(claim, c)
+            request = self.bound(claim, c)
+            if request.supersedes:
+                prior = c.execute("SELECT body FROM results WHERE id=?",
+                                  (str(request.supersedes),)).fetchone()
+                if prior and json.loads(prior[0])["backend_job_id"] == claim.backend_job_id:
+                    raise Conflict("new take must not reuse predecessor backend job")
             if claim.lease_until <= claim.heartbeat_at:
                 raise Conflict("invalid lease")
             row = c.execute("SELECT body FROM claims WHERE id=?", (str(claim.request_id),)).fetchone()
@@ -163,6 +175,8 @@ class Store:
                     raise Conflict("stale claim")
                 if claim.fence > old.fence and old.lease_until > claim.heartbeat_at:
                     raise Conflict("cannot steal an active backend lease")
+            c.execute("DELETE FROM flags WHERE id=? AND reason LIKE 'NEW_TAKE_MAPPING_REQUIRED:%'",
+                      (str(claim.request_id),))
             c.execute("INSERT OR REPLACE INTO claims VALUES(?,?)",
                       (str(claim.request_id), canonical(claim)))
         return True
@@ -214,7 +228,7 @@ class Store:
 
     def decide(self, command, actor):
         kind = type(command).__name__
-        roles = {QC: "director", Selection: "director", Control: "director", Approval: "client"}
+        roles = {QC: "director", Selection: "director", Control: "director", Approval: "client", ContinuityReview: "director"}
         if actor != roles.get(type(command)):
             raise PermissionError("role cannot issue this decision")
         with self.db() as c:
@@ -226,6 +240,19 @@ class Store:
                 return False
             r = self.bound(command, c) if isinstance(command, Control) else self.reviewed(command, c)
             rid = str(command.request_id)
+            if isinstance(command, ContinuityReview):
+                if not command.full_motion_reviewed or not command.cut_boundaries_reviewed:
+                    raise Conflict("continuity override needs actual motion and cut review")
+                expected = set()
+                for dep in r.dependencies:
+                    key = self.key(dep.predecessor)
+                    current = c.execute("SELECT body FROM selections WHERE shot_key=?", (key,)).fetchone()
+                    if not current:
+                        raise Conflict("missing predecessor selection")
+                    expected.add(current[0])
+                if {canonical(s) for s in command.current_selections} != expected or not expected:
+                    raise Conflict("continuity review must bind every current predecessor selection")
+                c.execute("DELETE FROM flags WHERE id=? AND reason LIKE 'CONTINUITY_REVIEW_REQUIRED:%'", (rid,))
             if isinstance(command, QC) and command.verdict == "ACCEPT":
                 if not (command.full_motion_reviewed and command.audio_listened
                         and command.cut_boundaries_reviewed) or command.limitations:
@@ -332,6 +359,7 @@ class Store:
             result = {}
             for table in ("requests", "results", "claims", "history", "selections"):
                 result[table] = [json.loads(r[0]) for r in c.execute(f"SELECT body FROM {table}")]
+            result["request_digests"] = {row["id"]: row["hash"] for row in c.execute("SELECT id,hash FROM requests")}
             result["flags"] = [dict(r) for r in c.execute("SELECT * FROM flags")]
             result["pending_delivery"] = c.execute("SELECT COUNT(*) FROM outbox WHERE delivered=0").fetchone()[0]
             result["sync"] = self_state = c.execute("SELECT body FROM kv WHERE key='sync'").fetchone()

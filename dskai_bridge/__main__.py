@@ -16,7 +16,7 @@ def main():
     args = parser.parse_args()
     if args.command == "schema":
         from . import models
-        for name in ("ShotRequest", "Claim", "Result", "QC", "Selection", "Approval", "Control", "Ack"):
+        for name in ("ShotRequest", "Claim", "Result", "QC", "Selection", "Approval", "Control", "Ack", "ContinuityReview"):
             print(json.dumps({"name": name, "schema": getattr(models, name).model_json_schema()}))
         return
     if args.command == "serve":
