@@ -1,0 +1,26 @@
+name: DSKAI bridge isolated tests
+on:
+  push:
+    branches: [codex/dskai-director-bridge]
+  pull_request:
+    branches: [dskai-bridge-contract]
+permissions:
+  contents: read
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r dskai_bridge/requirements.txt
+      - name: Compile implementation
+        run: python -m compileall -q dskai_bridge
+      - name: Deterministic contract, recovery, auth and media tests
+        run: python -m unittest dskai_bridge.test_bridge -v
+      - name: Check frontend syntax
+        run: |
+          node --check dskai_bridge/ui/studio.js
+          node --check dskai_bridge/ui/login.js
