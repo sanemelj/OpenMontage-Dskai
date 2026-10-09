@@ -53,6 +53,8 @@ class BrowserTests(unittest.TestCase):
                         self.assertLessEqual(page.evaluate("document.documentElement.scrollWidth"), 390)
                         self.assertEqual(page.request.get("http://127.0.0.1:4751/api/health").status, 200)
                         self.assertFalse(errors, errors)
+                        import sys
+                        self.assertNotIn("tools.tool_registry", sys.modules)
                         Path("test-artifacts").mkdir(exist_ok=True)
                         page.screenshot(path="test-artifacts/studio-mobile-synthetic.png", full_page=True)
                         page.set_viewport_size({"width":1440,"height":1000})

@@ -226,6 +226,41 @@ class JournalTests(unittest.TestCase):
         self.store.decide(self.qc(result, selection_revision=2), "director")
         self.assertTrue(self.store.decide(approval, "client"))
 
+    def test_hold_before_publication_and_resume(self):
+        hold=Control(**bound(self.r),decision_id=uuid4(),action="HOLD",reason="Synthetic hold")
+        self.store.decide(hold,"director")
+        self.assertFalse(any("/requests/" in r["path"] for r in self.store.pending()))
+        resume=Control(**bound(self.r),decision_id=uuid4(),action="RESUME",reason="Synthetic resume")
+        self.store.decide(resume,"director")
+        self.assertEqual(sum("/requests/" in r["path"] for r in self.store.pending()),1)
+
+    def test_all_descendants_flagged_and_review_order_enforced(self):
+        first=self.done()
+        self.store.decide(self.select(first),"director")
+        dep=Dependency(predecessor=identity(self.r),media_sha256=first.media[0].sha256,
+                       selection_revision=1,retained_frame_index=20,timebase_num=1,
+                       timebase_den=24,reference_sha256="1"*64)
+        child=shot(shot="child",relation="continuous_action",dependencies=[data(dep)])
+        self.store.add_request(child)
+        child_result=self.done(child)
+        child_selection=Selection(**bound(child),media_sha256=child_result.media[0].sha256,
+                    decision_id=uuid4(),selection_revision=1,in_frame=0,last_retained_frame=10,
+                    timebase_num=1,timebase_den=24)
+        self.store.decide(child_selection,"director")
+        dep2=Dependency(predecessor=identity(child),media_sha256=child_result.media[0].sha256,
+                    selection_revision=1,retained_frame_index=10,timebase_num=1,
+                    timebase_den=24,reference_sha256="2"*64)
+        grandchild=shot(shot="grandchild",relation="continuous_action",dependencies=[data(dep2)])
+        self.store.add_request(grandchild)
+        gc_result=self.done(grandchild)
+        self.store.decide(self.select(first,2,19),"director")
+        self.assertEqual(len(self.store.snapshot()["flags"]),2)
+        review=ContinuityReview(**bound(grandchild),media_sha256=gc_result.media[0].sha256,
+                    decision_id=uuid4(),current_selections=[child_selection],full_motion_reviewed=True,
+                    cut_boundaries_reviewed=True,findings=["Synthetic"])
+        with self.assertRaisesRegex(Conflict,"upstream"):
+            self.store.decide(review,"director")
+
 
 class TransportTests(unittest.TestCase):
     def test_unknown_put_outcome_reconciles_without_duplicate(self):
