@@ -317,6 +317,7 @@ class TransportTests(unittest.TestCase):
             sync=Sync(store,remote)
             self.assertTrue(sync.once())
             self.assertFalse(store.pending())
+            self.assertTrue(store.snapshot()["request_delivery"][str(request.request_id)])
             now=time.time()
             claim=Claim(**bound(request),fence=1,backend_job_id="synthetic-job",heartbeat_at=now,lease_until=now+1800)
             result=Result(**bound(request),event_id=uuid4(),sequence=1,backend_job_id="synthetic-job",

@@ -391,6 +391,9 @@ class Store:
             result = {}
             for table in ("requests", "results", "claims", "history", "selections"):
                 result[table] = [json.loads(r[0]) for r in c.execute(f"SELECT body FROM {table}")]
+            result["request_delivery"] = {
+                json.loads(row["body"])["request_id"]: bool(row["delivered"])
+                for row in c.execute("SELECT body,delivered FROM outbox WHERE path LIKE 'dskai-bridge/requests/%'")}
             result["request_digests"] = {row["id"]: row["hash"] for row in c.execute("SELECT id,hash FROM requests")}
             result["flags"] = [dict(r) for r in c.execute("SELECT * FROM flags")]
             result["pending_delivery"] = c.execute("SELECT COUNT(*) FROM outbox WHERE delivered=0").fetchone()[0]

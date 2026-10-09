@@ -55,7 +55,7 @@ function render() {
     const card = node("article", null, $("#shots"), "shot");
     const row = node("div", null, card, "row");
     node("h3", r.project + " / " + r.scene + " / " + r.shot, row);
-    node("span", result?.status || "RECORDED — DELIVERY PENDING", row, "badge");
+    node("span", result?.status || (snapshot.claims.some(c => c.request_id === r.request_id) ? "CLAIMED" : snapshot.request_delivery[r.request_id] ? "DELIVERED — WAITING FOR WORKER" : "RECORDED — DELIVERY PENDING"), row, "badge");
     node("p", "Prompt revision " + r.prompt_revision + " · Take " + r.take_version + " · " + r.relation, card);
     for (const f of snapshot.flags.filter(f => f.id === r.request_id)) node("p", f.reason, card);
     for (const b of result?.blockers || []) node("p", b, card);
