@@ -245,6 +245,8 @@ class Store:
                     raise Conflict("continuity override needs actual motion and cut review")
                 expected = set()
                 for dep in r.dependencies:
+                    if c.execute("SELECT 1 FROM flags WHERE id=?", (str(dep.predecessor.request_id),)).fetchone():
+                        raise Conflict("resolve upstream continuity before reviewing this descendant")
                     key = self.key(dep.predecessor)
                     current = c.execute("SELECT body FROM selections WHERE shot_key=?", (key,)).fetchone()
                     if not current:
@@ -254,6 +256,14 @@ class Store:
                     raise Conflict("continuity review must bind every current predecessor selection")
                 c.execute("DELETE FROM flags WHERE id=? AND reason LIKE 'CONTINUITY_REVIEW_REQUIRED:%'", (rid,))
             if isinstance(command, QC) and command.verdict == "ACCEPT":
+                selected = c.execute("SELECT body FROM selections WHERE shot_key=?", (self.key(r),)).fetchone()
+                if not selected:
+                    raise Conflict("select the retained cut before accepting its QC")
+                selection = Selection.model_validate_json(selected[0])
+                if (identity(selection) != identity(command)
+                        or selection.media_sha256 != command.media_sha256
+                        or selection.selection_revision != command.selection_revision):
+                    raise Conflict("QC acceptance must bind the current selected cut")
                 if not (command.full_motion_reviewed and command.audio_listened
                         and command.cut_boundaries_reviewed) or command.limitations:
                     raise Conflict("acceptance needs actual playback, listening and cut review without unresolved limitations")
@@ -265,11 +275,22 @@ class Store:
                     raise Conflict("selection revision must increase")
                 c.execute("INSERT OR REPLACE INTO selections VALUES(?,?)",
                           (self.key(r), canonical(command)))
-                for row in c.execute("SELECT id,body FROM requests"):
-                    for dep in ShotRequest.model_validate_json(row["body"]).dependencies:
-                        if self.key(dep.predecessor) == self.key(r) and not self.matches_dependency(command, dep):
-                            c.execute("INSERT OR REPLACE INTO flags VALUES(?,?)",
-                                      (row["id"], "CONTINUITY_REVIEW_REQUIRED: selected predecessor or cut changed; no automatic regeneration"))
+                affected = set()
+                requests = [(row["id"], ShotRequest.model_validate_json(row["body"]))
+                            for row in c.execute("SELECT id,body FROM requests")]
+                for rid_child, child in requests:
+                    if any(self.key(d.predecessor) == self.key(r)
+                           and not self.matches_dependency(command, d) for d in child.dependencies):
+                        affected.add(rid_child)
+                while True:
+                    expanded = affected | {rid_child for rid_child, child in requests
+                        if any(str(d.predecessor.request_id) in affected for d in child.dependencies)}
+                    if expanded == affected:
+                        break
+                    affected = expanded
+                for rid_child in affected:
+                    c.execute("INSERT OR REPLACE INTO flags VALUES(?,?)",
+                              (rid_child, "CONTINUITY_REVIEW_REQUIRED: predecessor selection or upstream continuity changed; no automatic regeneration"))
             if isinstance(command, Approval):
                 selection = c.execute("SELECT body FROM selections WHERE shot_key=?", (self.key(r),)).fetchone()
                 if not selection:
@@ -283,6 +304,7 @@ class Store:
                 if command.verdict == "CLIENT_APPROVED" and (
                         not qc or json.loads(qc[0])["verdict"] != "ACCEPT"
                         or json.loads(qc[0])["media_sha256"] != command.media_sha256
+                        or json.loads(qc[0]).get("selection_revision") != command.selection_revision
                         or c.execute("SELECT 1 FROM flags WHERE id=?", (rid,)).fetchone()):
                     raise Conflict("client approval needs current director acceptance and continuity")
             c.execute("INSERT INTO history VALUES(?,?,?,?,?)",
@@ -312,7 +334,17 @@ class Store:
 
     def pending(self):
         with self.db() as c:
-            return [dict(r) for r in c.execute("SELECT * FROM outbox WHERE delivered=0 ORDER BY rowid")]
+            rows = [dict(r) for r in c.execute("SELECT * FROM outbox WHERE delivered=0 ORDER BY rowid")]
+            ready = []
+            for row in rows:
+                body = json.loads(row["body"])
+                rid = body.get("request_id") if "/requests/" in row["path"] else None
+                if rid:
+                    latest = c.execute("SELECT body FROM history WHERE kind='Control' AND request_id=? ORDER BY rowid DESC LIMIT 1", (rid,)).fetchone()
+                    if latest and json.loads(latest[0])["action"] == "HOLD":
+                        continue  # local hold before publication prevents dispatch
+                ready.append(row)
+            return ready
 
     def delivered(self, path):
         with self.db() as c:

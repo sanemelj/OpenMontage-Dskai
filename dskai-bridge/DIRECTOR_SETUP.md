@@ -75,7 +75,7 @@ SHA-256 of validated model JSON, with defaults, sorted keys and compact separato
 
 Claims/results/decisions bind full identity and request digest. Backend job and fence must
 match. DONE is immutable. Media has UUID/version/checksum/size/MIME/relative path. QC additionally
-pins video hash; client verdict pins selection revision. Director ACCEPT and client approval
+pins video hash; ACCEPT and client verdict both pin the current retained-cut selection revision. A trim change requires fresh QC. Director ACCEPT and client approval
 are separate records. GitHub delivery is not backend application: a matching worker Ack is required.
 
 - POST /studio/api/requests — director, ShotRequest.

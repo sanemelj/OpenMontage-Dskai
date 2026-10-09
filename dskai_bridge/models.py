@@ -158,6 +158,7 @@ class Reviewed(Binding):
 
 class QC(Reviewed):
     decision_id: UUID
+    selection_revision: Positive | None = None
     verdict: Literal["ACCEPT", "REJECT", "NEEDS_REVIEW"]
     full_motion_reviewed: StrictBool
     audio_listened: StrictBool

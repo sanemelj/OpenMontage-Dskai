@@ -67,7 +67,7 @@ class JournalTests(unittest.TestCase):
 
     def qc(self, result, **kw):
         body = dict(**bound(self.r), media_sha256=result.media[0].sha256, decision_id=uuid4(),
-                    verdict="ACCEPT", full_motion_reviewed=True, audio_listened=True,
+                    verdict="ACCEPT", selection_revision=1, full_motion_reviewed=True, audio_listened=True,
                     cut_boundaries_reviewed=True, findings=["Synthetic assertions, not real media QC"])
         body.update(kw)
         return QC(**body)
@@ -121,12 +121,13 @@ class JournalTests(unittest.TestCase):
 
     def test_audio_and_client_authority(self):
         result = self.done()
-        with self.assertRaises(Conflict):
+        self.store.decide(self.select(result), "director")
+        with self.assertRaisesRegex(Conflict, "actual playback"):
+
             self.store.decide(self.qc(result, audio_listened=False), "director")
         with self.assertRaises(PermissionError):
             self.store.decide(self.qc(result), "worker")
         self.store.decide(self.qc(result), "director")
-        self.store.decide(self.select(result), "director")
         approval = Approval(**bound(self.r), decision_id=uuid4(), media_sha256=result.media[0].sha256,
                             selection_revision=1, verdict="CLIENT_APPROVED")
         with self.assertRaises(PermissionError):
@@ -138,6 +139,7 @@ class JournalTests(unittest.TestCase):
     def test_ack_requires_exact_command(self):
         result = self.done()
         q = self.qc(result)
+        self.store.decide(self.select(result), "director")
         self.store.decide(q, "director")
         ack = Ack(event_id=uuid4(), command_id=q.decision_id, request_id=self.r.request_id,
                   command_sha256=digest(q), outcome="APPLIED", backend_record_id="qc-1",
@@ -169,6 +171,7 @@ class JournalTests(unittest.TestCase):
         lease = next(x for x in claimed if x)
         with self.assertRaises(Conflict):
             self.store.finish_qc_task(self.r.request_id, lease["owner"], lease["fence"])
+        self.store.decide(self.select(result), "director")
         self.store.decide(self.qc(result), "director")
         self.store.finish_qc_task(self.r.request_id, lease["owner"], lease["fence"])
         self.assertIsNone(self.store.claim_qc("again"))
@@ -209,6 +212,19 @@ class JournalTests(unittest.TestCase):
             self.store.ingest_claim(claim)
         self.store.ingest_claim(claim.model_copy(update={"backend_job_id":"new-physical-job"}))
         self.assertFalse(self.store.snapshot()["flags"])
+
+
+    def test_trim_change_requires_fresh_qc_before_client_approval(self):
+        result = self.done()
+        self.store.decide(self.select(result), "director")
+        self.store.decide(self.qc(result), "director")
+        self.store.decide(self.select(result, revision=2, frame=19), "director")
+        approval = Approval(**bound(self.r), decision_id=uuid4(), media_sha256=result.media[0].sha256,
+                            selection_revision=2, verdict="CLIENT_APPROVED")
+        with self.assertRaises(Conflict):
+            self.store.decide(approval, "client")
+        self.store.decide(self.qc(result, selection_revision=2), "director")
+        self.assertTrue(self.store.decide(approval, "client"))
 
 
 class TransportTests(unittest.TestCase):

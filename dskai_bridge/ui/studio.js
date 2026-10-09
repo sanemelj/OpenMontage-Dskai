@@ -45,6 +45,8 @@ function render() {
   $("#sync").textContent = "Last successful synchronization: " +
     (snapshot.sync.last_success ? new Date(snapshot.sync.last_success * 1000).toLocaleString() : "Never") +
     " · Pending GitHub records: " + snapshot.pending_delivery;
+  // Preserve media playback/seek state during automatic polling.
+  if (render.preserveMedia && [...document.querySelectorAll("video,audio")].some(p => p.currentTime > 0 && !p.ended)) return;
   $("#shots").replaceChildren();
   const requests = snapshot.requests.filter(r => !selectedProject || r.project === selectedProject);
   if (!requests.length) node("p", "No production requests yet. No demo media or invented progress is shown.", $("#shots"));
@@ -94,7 +96,7 @@ function render() {
           });
         }
         button(actions, "Review take", () => {
-          activeQC = {...binding(result), media_sha256: video.sha256};
+          activeQC = {...binding(result), media_sha256: video.sha256, selection_revision: snapshot.selections.find(s => s.request_id === r.request_id)?.selection_revision || null};
           $("#qc-form").reset(); $("#qc-dialog").showModal();
         });
         button(actions, "Select retained cut", async () => {
@@ -135,15 +137,15 @@ function render() {
   for (const t of snapshot.director_tasks) node("p", t.request_id + " · " + (t.acked ? "Inspection recorded" : t.lease * 1000 > Date.now() ? "Inspection leased" : "Waiting for director"), $("#tasks"));
 }
 let refreshing = false;
-async function refresh() {
+async function refresh(force = false) {
   if (refreshing) return;
   refreshing = true;
-  try { snapshot = await api("state"); render(); }
+  try { snapshot = await api("state"); render.preserveMedia = !force; render(); }
   catch(e) { notice(e.message); $("#connection").textContent = "DISCONNECTED — displayed state may be stale"; }
   finally { refreshing = false; }
 }
-$("#refresh").addEventListener("click", refresh);
-$("#project").addEventListener("change", render);
+$("#refresh").addEventListener("click", () => refresh(true));
+$("#project").addEventListener("change", () => { render.preserveMedia = false; render(); });
 $("#request-form").addEventListener("submit", async event => {
   event.preventDefault();
   try { await api("requests", "POST", JSON.parse($("#request-json").value)); notice("Request recorded. Delivery and worker execution are separate states."); await refresh(); }
