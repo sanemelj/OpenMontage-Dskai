@@ -37,3 +37,5 @@ Limitations: single-owner role separation; cache not replicated backup; first pl
 verified download; 1 GB per asset but aggregate quota/retention pending; remote editing/export
 projection needs backend records; scheduling/budget/provider idempotency remain backend duties.
 General discovery telemetry source/opt-out unresolved in the nonfunctional local environment.
+
+Final code validation: e7a70b91cef84dbc4e99a9514e2d06a8dcd000ec passed 24 deterministic tests and 1 Chromium test. See VALIDATION.md and run 38000283470. Later evidence-document commits do not change executable code.
