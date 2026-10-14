@@ -100,4 +100,6 @@ Modèl la li Kreyòl tankou fransè. Nou ekri replik la ak òtograf fransè pou 
 | yè | yè | kenbe *è* |
 | ou te ye | ou té yé | separe silab yo, *e* → *é* |
 
+**Fòm kontrakte:** nan pwonmt yo, nou ekri **fòm konplè** a (`manman ou`, `ou gain`, `papa li`), pa fòm kout la (`manman w`, `papa l`). Nan Kreyòl, fòm kout la toujou vini **apre** yon mo, li pa janm kòmanse yon fraz.
+
 > Ou valide chak lis replik fonetik anvan jenerasyon. Nou ajoute règ nan tablo sa a chak fwa w korije youn.
