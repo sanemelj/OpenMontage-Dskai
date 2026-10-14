@@ -22,17 +22,21 @@ KF_W, KF_H = 1664, 928
 K6_MODEL = "kandinskylab/Kandinsky-6.0-Lite-distill-5s-Diffusers"
 
 
-def keyframe_prompt(shot: dict, look: str) -> str:
+def set_text(shot: dict, spec: dict) -> str:
+    return spec.get("sets", {}).get(shot.get("set", ""), "")
+
+
+def keyframe_prompt(shot: dict, look: str, setting: str = "") -> str:
     return (
-        f"Cinematic film still from a premium drama series. {shot['frame']}. "
+        f"Cinematic film still from a premium drama series. {shot['frame']}. {setting} "
         "Keep the exact faces, hairstyles, skin tones and clothing of the people in the reference images; "
         "keep the architecture and props of the location reference. "
         f"{look}"
     )
 
 
-def video_prompt(shot: dict, look: str) -> str:
-    parts = [f"{shot['frame']}.", f"{shot['motion']}."]
+def video_prompt(shot: dict, look: str, setting: str = "") -> str:
+    parts = [f"{shot['frame']}.", setting, f"{shot['motion']}."]
     if shot.get("line"):
         who = shot.get("who", "She")
         pron = "her" if who == "She" else "his"
@@ -95,7 +99,7 @@ def main() -> None:
 
             def kf(shot):
                 refs = [(assets / spec["refs"][r]).read_bytes() for r in shot["refs"]]
-                p = keyframe_prompt(shot, look)
+                p = keyframe_prompt(shot, look, set_text(shot, spec))
                 r = ed.generate.remote(p, refs, 1, 40, 4.0, width=KF_W, height=KF_H)
                 (kf_dir / f"{shot['id']}.png").write_bytes(r.pop("image"))
                 return {"stage": "keyframe", "shot": shot["id"], "prompt": p, **r, "ts": time.time()}
@@ -114,7 +118,7 @@ def main() -> None:
 
             def vid(job):
                 shot, seed = job
-                p = video_prompt(shot, look)
+                p = video_prompt(shot, look, set_text(shot, spec))
                 r = k6.generate.remote(prompt=p, image_bytes=(kf_dir / f"{shot['id']}.png").read_bytes(), seed=seed)
                 (clip_dir / f"{shot['id']}_s{seed}.mp4").write_bytes(r.pop("video"))
                 return {"stage": "video", "shot": shot["id"], "prompt": p, **r, "ts": time.time()}
