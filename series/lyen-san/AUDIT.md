@@ -54,3 +54,8 @@ Kaggle (gratis, ~360 klip/mwa, men lan: ~21 min/klip) pran yon pati nan repran y
 | 5 | **Vrè andwa** (Sitadèl, Jakmèl) pa rekonèt | Image→video depi foto referans CC | Plis plan etabli ak foto, mwens plan jenere |
 
 **Opinyon m:** risk #1 (aksyon) ak #4 (kalite 1080p) se de pi gwo yo pou yon nivo "Netflix". Nou dwe teste yo **anvan** nou jenere asset yo.
+
+## 5. Kote medya yo sere
+Videyo, keyframe ak montaj yo **pa nan git** (yo twò gwo). Yo sou Modal Volume **`lyen-san-media`** (workspace `dskovasas`):
+- Gade/telechaje: modal.com → Storage → Volumes → `lyen-san-media`
+- CLI: `modal volume get lyen-san-media /ep01 ./ep01`
