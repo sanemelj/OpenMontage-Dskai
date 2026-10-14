@@ -29,8 +29,24 @@ GOOGLE_API_TIMEOUT_SECONDS = 600
 GOOGLE_API_TIMEOUT_MS = GOOGLE_API_TIMEOUT_SECONDS * 1000
 
 
+def _materialize_service_account_json() -> None:
+    """Write GOOGLE_SERVICE_ACCOUNT_JSON (inline key, e.g. a cloud env secret) to a
+    private file and point GOOGLE_APPLICATION_CREDENTIALS at it, unless a path is
+    already configured."""
+    raw = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
+    if not raw or os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+        return
+    path = os.path.expanduser("~/.config/openmontage/gcp-service-account.json")
+    os.makedirs(os.path.dirname(path), mode=0o700, exist_ok=True)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w") as f:
+        f.write(raw)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path
+
+
 def service_account_configured() -> bool:
     """True when GOOGLE_APPLICATION_CREDENTIALS points to an existing file."""
+    _materialize_service_account_json()
     path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
     return bool(path and os.path.exists(path))
 

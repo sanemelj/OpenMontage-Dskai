@@ -22,7 +22,12 @@
 - Ep 1 Sèn 1–4: tout pèsonaj s1, `delmas_street_night_v2`, koridò/chanm (dekri an tèks), braslè N.V.
 - Keyframe Ep 1 Sèn 1–4 (33): sou Modal Volume `lyen-san-media:/ep01/keyframes`. Grid la: `episodes/ep01_sc01-04_keyframes.jpg`.
 
-## Pwochen etap (nouvo sesyon ak `GEMINI_API_KEY`)
+## Opsyon kredi $300 Google Cloud (Vertex AI)
+Kredi $300 la pa valab pou AI Studio, men li ka valab pou Veo sou **Vertex AI**. Sa poko konfime: fè 1 jenerasyon tès, epi tcheke Billing → Reports.
+- Varyab anviwònman: `GOOGLE_GENAI_USE_VERTEXAI=true`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION=us-central1`, `GOOGLE_SERVICE_ACCOUNT_JSON` (kontni JSON kle service account la, wòl "Vertex AI User").
+- `tools/google_credentials.py` ekri JSON sa a nan yon fichye prive, epi li mete `GOOGLE_APPLICATION_CREDENTIALS`.
+
+## Pwochen etap (nouvo sesyon ak `GEMINI_API_KEY` oswa Vertex)
 1. Verifye kle a: `GET https://generativelanguage.googleapis.com/v1beta/models`.
 2. **Tès Veo 3.1 Lite (~$3–4):**
    - 4 plan aksyon (2.4, 2.5, 2.7, 2.11) ak 8 replik Kreyòl (1.4, 1.5, 2.14, 3.3, 3.4, 3.6, 4.4, 4.5), depi keyframe yo.
