@@ -74,7 +74,7 @@ def main() -> None:
 
     from kandinsky6 import Kandinsky6  # noqa: E402
     from kandinsky6 import app as k6_app  # noqa: E402
-    from qwen_image import QwenEdit  # noqa: E402
+    from qwen_image import QwenEdit, QwenT2I  # noqa: E402
     from qwen_image import app as qwen_app  # noqa: E402
 
     def record(row: dict) -> None:
@@ -96,11 +96,15 @@ def main() -> None:
         todo = [s for s in shots if not (kf_dir / f"{s['id']}.png").exists()]
         with modal.enable_output(), qwen_app.run():
             ed = QwenEdit.with_options(gpu=args.kf_gpu)()
+            t2i = QwenT2I.with_options(gpu=args.kf_gpu)()
 
             def kf(shot):
                 refs = [(assets / spec["refs"][r]).read_bytes() for r in shot["refs"]]
                 p = keyframe_prompt(shot, look, set_text(shot, spec))
-                r = ed.generate.remote(p, refs, 1, 40, 4.0, width=KF_W, height=KF_H)
+                if refs:
+                    r = ed.generate.remote(p, refs, 1, 40, 4.0, width=KF_W, height=KF_H)
+                else:  # empty set / insert shot: no reference to keep
+                    r = t2i.generate.remote(p, KF_W, KF_H, 1)
                 (kf_dir / f"{shot['id']}.png").write_bytes(r.pop("image"))
                 return {"stage": "keyframe", "shot": shot["id"], "prompt": p, **r, "ts": time.time()}
 
