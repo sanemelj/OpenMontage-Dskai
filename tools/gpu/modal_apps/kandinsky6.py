@@ -2,8 +2,11 @@
 
 Weights live in a persistent Modal Volume so they download once per workspace.
 
-Smoke test (writes MP4s locally):
-    modal run tools/gpu/modal_apps/kandinsky6.py --prompt "..." --out projects/x/assets/video/clip.mp4
+Single clip (writes the MP4 locally):
+    modal run tools/gpu/modal_apps/kandinsky6.py --prompt "..." --out projects/x/assets/video/clip.mp4 --gpu H100
+
+Pre-download weights into the Volume (CPU only, so GPU time is never spent downloading):
+    modal run tools/gpu/modal_apps/kandinsky6.py::prefetch --models "<repo>,<repo>"
 """
 
 import os
@@ -22,6 +25,7 @@ image = (
     .apt_install("git", "ffmpeg")
     .pip_install(
         "torch==2.8.0",
+        "torchvision==0.23.0",
         "transformers>=4.57",
         "accelerate",
         "sentencepiece",
@@ -44,13 +48,19 @@ class Kandinsky6:
 
     @modal.enter()
     def load(self) -> None:
+        import time
+
         import torch
         from diffusers import Kandinsky6TI2VAPipeline
 
+        t0 = time.time()
         self.pipe = Kandinsky6TI2VAPipeline.from_pretrained(self.model_id, torch_dtype=torch.bfloat16)
         self.pipe.to("cuda")
         self.pipe.vae.enable_tiling()
         hf_cache.commit()
+        self.load_seconds = round(time.time() - t0, 1)
+        self.gpu_name = torch.cuda.get_device_name(0)
+        self.clips_done = 0
 
     @modal.method()
     def generate(
@@ -107,15 +117,34 @@ class Kandinsky6:
             encode_video(out.frames[0], fps=int(fps), output_path=f.name, **audio_kw)
             data = Path(f.name).read_bytes()
 
+        self.clips_done += 1
         return {
             "video": data,
             "model": self.model_id,
             "steps": steps,
             "guidance_scale": cfg,
             "seed": seed,
+            "width": width,
+            "height": height,
+            "num_frames": num_frames,
             "generation_seconds": round(gen_s, 1),
-            "gpu": GPU,
+            "load_seconds": self.load_seconds,
+            "clip_index_in_container": self.clips_done,
+            "peak_vram_gib": round(torch.cuda.max_memory_allocated() / 2**30, 2),
+            "gpu": self.gpu_name,
         }
+
+
+@app.function(volumes={"/cache": hf_cache}, timeout=60 * 60, cpu=4, memory=8192)
+def prefetch(models: str = DEFAULT_MODEL) -> dict:
+    from huggingface_hub import snapshot_download
+
+    sizes = {}
+    for repo in [m.strip() for m in models.split(",") if m.strip()]:
+        path = Path(snapshot_download(repo))
+        sizes[repo] = round(sum(f.stat().st_size for f in path.rglob("*") if f.is_file()) / 2**30, 2)
+    hf_cache.commit()
+    return sizes
 
 
 @app.local_entrypoint()
@@ -128,11 +157,12 @@ def main(
     steps: int = 0,
     width: int = 864,
     height: int = 480,
+    gpu: str = GPU,
 ):
     import json
 
     image_bytes = Path(image).read_bytes() if image else None
-    res = Kandinsky6(model_id=model).generate.remote(
+    res = Kandinsky6.with_options(gpu=gpu)(model_id=model).generate.remote(
         prompt=prompt,
         image_bytes=image_bytes,
         seed=seed,
