@@ -92,7 +92,8 @@ class QwenEdit:
 
     @modal.method()
     def generate(self, prompt: str, refs: list[bytes], seed: int = 42, steps: int = 40,
-                 true_cfg_scale: float = 4.0, negative_prompt: str = NEGATIVE) -> dict:
+                 true_cfg_scale: float = 4.0, negative_prompt: str = NEGATIVE,
+                 width: int | None = None, height: int | None = None) -> dict:
         import io
         import time
 
@@ -104,6 +105,7 @@ class QwenEdit:
         img = self.pipe(
             image=images, prompt=prompt, negative_prompt=negative_prompt,
             num_inference_steps=steps, true_cfg_scale=true_cfg_scale, guidance_scale=1.0,
+            width=width, height=height,
             generator=torch.Generator("cuda").manual_seed(seed),
         ).images[0]
         return {"image": _png(img), "seconds": round(time.time() - t0, 1), "seed": seed, "model": EDIT_MODEL}
