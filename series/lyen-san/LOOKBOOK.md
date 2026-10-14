@@ -73,6 +73,13 @@ Règ: **po moun nwa toujou byen limen** (limyè rebondi cho, pa janm sous-ekspoz
 | Jak | Vès kwi mawon, chemiz kawo |
 | Dany | Polo, lunèt, kask odyo sou kou |
 
+## 5b. Kasting (règ pou tout pèsonaj)
+- Pèsonaj prensipal yo **bèl, ak prezans aktè/aktris**: figi defini, po klere ak an sante, je ekspresif. Ayisyen bèl, nou montre sa.
+- **Po nwa fonse** rete fonse: pa janm eklèsi l. Limyè a mete l an valè.
+- Antagonis yo kapab bèl tou (Rèj, Kervens). Danje a vin nan konpòtman yo, pa nan "laide".
+- Pwonmt pozitif: `stunningly beautiful / handsome Haitian actor/actress, leading looks, deep dark brown skin with a healthy radiant glow`.
+- Pwonmt negatif: `tired, aged (si pèsonaj la pa granmoun), unflattering light, light skin, plastic skin`.
+
 ## 6. Akseswa kle
 
 - **Braslè lò "N.V."**: gwo plan sou li nan Ep 1, 4, 8, 12. Fèt yon fwa kòm asset, menm modèl la toupatou.
