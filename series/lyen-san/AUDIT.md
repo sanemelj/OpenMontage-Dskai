@@ -23,11 +23,11 @@ Dat: 2026-10-14. Chif ki **mezire** yo soti nan `docs/gpu-benchmarks/`. Chif ki 
 
 Yon sèl fwa: bib asset (8 pèsonaj, ~10 andwa, akseswa) + tès ≈ **$15**.
 
-## 3. Bidjè $100/mwa → konbyen tan
+## 3. Bidjè $100–150/mwa → konbyen tan
 | Senaryo | Kalkil (Modal) | Epizòd/mwa |
 |---|---|---|
 | $100 + $30 kredi gratis Modal = $130 | 130 ÷ 24 | **~5** |
-| Konsèvatif ($100 total) | 100 ÷ 24 | **~4** |
+| $150 + $30 kredi gratis Modal = $180 | 180 ÷ 24 | **~7** |
 
 Kaggle (gratis, ~360 klip/mwa, men lan: ~21 min/klip) pran yon pati nan repran yo. Sa bay plis maj ankò.
 
@@ -42,7 +42,7 @@ Kaggle (gratis, ~360 klip/mwa, men lan: ~21 min/klip) pran yon pati nan repran y
 
 **Rezilta: sezon 1 = ~3 mwa pwodiksyon, ~4 mwa piblikasyon**, ak yon epizòd chak semèn.
 
-> Mete **spend limit Modal** sou $100 (Settings → Usage & Billing) pou bidjè a pa janm depase.
+> Mete **spend limit Modal** sou $150 (Settings → Usage & Billing) pou bidjè a pa janm depase.
 
 ## 4. Risk — tès obligatwa anvan pwodiksyon (~$5)
 | # | Risk | Tès | Si l echwe |
