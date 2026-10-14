@@ -1,5 +1,14 @@
 # LYEN SAN — Odit pwodiksyon (Sezon 1)
 
+> **PLAN 2 (2026-10-14, aktif):** Kandinsky rejte pou dyalòg Kreyòl ak aksyon. Tout plan videyo yo fèt ak **Veo 3.1 Lite** (Gemini API), depi keyframe Qwen sou Modal.
+> - **Ritm:** 4 epizòd/mwa. Nou pwodui 8 anvan, epi nou pibliye youn chak 4–5 jou.
+> - **Pran:** 1 pran pa plan; nou refè sèlman plan ki pa bon (~20–30% plan, sa ki entegre nan pri a).
+> - **Veo Lite 720p** ($0.05/s): ~$110–130/mwa. Upscale 1080p sou Modal. (1080p dirèk = $0.08/s ≈ $190/mwa.)
+> - **Modal** (keyframe + upscale + stokaj): ~$25–32/mwa, kouvri pa $30 kredi gratis la.
+> - **Apre sezon an:** konpilasyon fim konplè (~1h30) + Shorts/Reels/TikTok ak kwòk yo.
+> - Seksyon 2–4 anba yo se **plan 1 (Kandinsky)**, kenbe kòm referans.
+
+
 Dat: 2026-10-14. Chif ki **mezire** yo soti nan `docs/gpu-benchmarks/`. Chif ki make **estimasyon** poko teste.
 
 ## 1. Gwosè sezon an
