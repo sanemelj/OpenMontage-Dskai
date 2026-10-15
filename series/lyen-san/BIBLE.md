@@ -89,6 +89,8 @@ Lè Sarah te gen 14 an, fanmi manman l te di l manman l mouri nan yon aksidan. D
 4. **Dyalòg Kreyòl nan videyo a:** chak replik gen yon **vèsyon fonetik** pou pwonmt lan (gade §8).
 
 ## 8. Règ fonetik pou pwonmt yo (dyalòg Kreyòl)
+
+> **Sèlman pou Kandinsky (Modal/Kaggle).** Ak **Google Flow / Veo**, ekri Kreyòl la nòmalman (òtograf estanda, kontraksyon yo pèmèt), pa vèsyon fonetik la.
 Modèl la li Kreyòl tankou fransè. Nou ekri replik la ak òtograf fransè pou l pwononse l byen.
 
 | Kreyòl | Fonetik pwonmt | Règ |

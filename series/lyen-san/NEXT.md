@@ -9,13 +9,14 @@
 - **MCP Flow** enstale sou laptop HP (Windows) itilizatè a: `Documents\mcp-google-flow`, vèsyon `403639e` (kòd la revize: li pale sèlman ak flow.google.com ak Chrome lokal).
   - Non MCP a: `google-flow`. Bidjè tès: `FLOW_MCP_MAX_CREDITS=20`. Klip yo telechaje nan `FlowStudio\output`.
   - Chak jenerasyon peye: premye apèl la bay yon pri (quote), dezyèm apèl la ak `confirm: true` depanse kredi yo. Toujou montre pri a bay itilizatè a.
+- **Kreyòl nan Flow/Veo:** ekri l nòmalman. Règ fonetik BIBLE §8 yo PA aplike ak Veo.
 - Itilizatè a pa konn kòd: eksplike an Kreyòl senp, yon etap alafwa, epi fè travay teknik yo pou li.
 - Piblikasyon: fini *Lanmou & Soupson* anvan, epi lanse LYEN SAN apre (teaser nan dènye epizòd la). Kenbe 8+ epizòd LYEN SAN pare anvan premye a soti.
 
 ## Desizyon ki deja pran
 - **Plan 2:** tout plan videyo yo ap fèt ak **Veo 3.1 Lite** (Gemini API, 720p $0.05/s, upscale 1080p sou Modal). Gade `AUDIT.md`.
 - **Kandinsky 6 rejte:** Kreyòl la pa bon (natif oswa ak LatentSync), epi aksyon an twò lan ak pa reyalis.
-- **Dyalòg:** natif nan videyo a, an Kreyòl ak fòm konplè (pa kontraksyon). Règ fonetik yo nan `BIBLE.md` §8.
+- **Dyalòg:** natif nan videyo a. Ak **Flow/Veo**: ekri Kreyòl nòmal (pa règ fonetik, kontraksyon yo pèmèt). Règ fonetik `BIBLE.md` §8 yo te pou Kandinsky sèlman.
 - **Keyframe:** Qwen-Image-2512 / Edit-2511 sou Modal (`tools/gpu/modal_apps/qwen_image.py`).
   - Pa plis pase 1–2 GPU an menm tan: 8 GPU an paralèl te triple pri a (~$0.12/imaj).
   - Kenbe moman **anvan** aksyon an nan keyframe a.
