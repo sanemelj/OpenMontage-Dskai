@@ -1,6 +1,16 @@
 # LYEN SAN — Kote nou ye / Pwochen etap (handoff ant sesyon)
 
-**Dènye mizajou:** 2026-10-14
+**Dènye mizajou:** 2026-10-15
+
+## NOUVO (2026-10-15): Google Flow sou laptop la
+- Videyo yo ap fèt nan **Google Flow** (Veo 3.1 Lite, 720p, apre sa upscale), pa nan API a: kredi Flow koute 2–4 fwa mwens.
+  - Lite = 10 kredi/klip 8 s sou Pro (5 kredi sou Ultra). Imaj Nano Banana yo gratis → keyframe yo fèt nan Flow, pa sou Modal.
+  - Plan: Pro + 50 kredi gratis chak jou + top-up 2,500 kredi ($25, valab 12 mwa). Ultra 5x sèlman si nou fè ~1 epizòd chak jou (~2,250 klip/mwa).
+- **MCP Flow** enstale sou laptop HP (Windows) itilizatè a: `Documents\mcp-google-flow`, vèsyon `403639e` (kòd la revize: li pale sèlman ak flow.google.com ak Chrome lokal).
+  - Non MCP a: `google-flow`. Bidjè tès: `FLOW_MCP_MAX_CREDITS=20`. Klip yo telechaje nan `FlowStudio\output`.
+  - Chak jenerasyon peye: premye apèl la bay yon pri (quote), dezyèm apèl la ak `confirm: true` depanse kredi yo. Toujou montre pri a bay itilizatè a.
+- Itilizatè a pa konn kòd: eksplike an Kreyòl senp, yon etap alafwa, epi fè travay teknik yo pou li.
+- Piblikasyon: fini *Lanmou & Soupson* anvan, epi lanse LYEN SAN apre (teaser nan dènye epizòd la). Kenbe 8+ epizòd LYEN SAN pare anvan premye a soti.
 
 ## Desizyon ki deja pran
 - **Plan 2:** tout plan videyo yo ap fèt ak **Veo 3.1 Lite** (Gemini API, 720p $0.05/s, upscale 1080p sou Modal). Gade `AUDIT.md`.
