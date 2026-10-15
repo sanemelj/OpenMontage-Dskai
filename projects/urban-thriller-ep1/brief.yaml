@@ -1,0 +1,44 @@
+name: urban-thriller-ep1
+version: "1.0"
+title: Midnight Run
+description: >
+  A no-dialogue urban thriller in the cinematic style. The narrative is driven by motion,
+  sound design, rain, neon, and escalating pursuit beats across a midnight city.
+target_runtime_seconds: 510
+platform: youtube_landscape
+aspect_ratio: "21:9"
+resolution: "2560x1080"
+framerate: 24
+language: en
+narration: false
+dialogue: false
+music: free_only
+music_style: dark_electronic_noir
+sound_design: required
+color_grade: filmic_noir
+
+hooks:
+  - "A lone figure running through a city that feels abandoned"
+  - "Rain, sirens, and shadowed motion without explanation"
+  - "A final escape that only becomes clear at the ending"
+
+creative_direction:
+  mood: tense
+  pacing: fast_then_unsettling
+  camera_language: hand-held_energy + long dramatic pushes
+  palette: cyan_neon + deep_blue + wet_shadows + warm_red_accents
+  visual_grammar: urban_noir
+
+pipeline:
+  source: cinematic
+  render_runtime: remotion
+  motion_required: true
+  free_only: true
+
+output_plan:
+  hero_export: "midnight-run-final.mp4"
+  shorts:
+    - "midnight-run-short-1.mp4"
+    - "midnight-run-short-2.mp4"
+    - "midnight-run-short-3.mp4"
+    - "midnight-run-short-4.mp4"

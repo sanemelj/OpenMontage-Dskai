@@ -1,0 +1,82 @@
+title: "Midnight Run"
+summary: >
+  A no-dialogue urban thriller told through action, cinematic framing, and atmospheric sound.
+  The protagonist moves through a midnight city with no explanation, only the pressure of pursuit,
+  rain, neon reflections, sirens, and the sensation that something is always one step behind.
+
+beat_map:
+  - time_start: 0
+    time_end: 18
+    label: hook
+    beat: "Black frame. Rain sounds. City lights. A silhouette runs through the wet street."
+    visual_goal: "Instant tension and curiosity"
+    sound_goal: "SFX-heavy ambience, distant siren, sharp rain"
+
+  - time_start: 18
+    time_end: 52
+    label: first_pressure
+    beat: "The runner moves through alleys, underpasses, and a deserted boulevard. Signs of pursuit appear in reflections and motion."
+    visual_goal: "Create urgency and city scale"
+    sound_goal: "Sub-bass pulse, city ambience, passing traffic"
+
+  - time_start: 52
+    time_end: 110
+    label: confusion
+    beat: "The city feels wrong — empty but alive. Crosswalk lights blink. A fleeting shadow is seen in the distance."
+    visual_goal: "Unsettling, dreamlike city movement"
+    sound_goal: "Distorted siren layer, rain intensity swell"
+
+  - time_start: 110
+    time_end: 175
+    label: chase_sequence
+    beat: "Fast cuts, rooftop transitions, tunnel movement, close framing on speed and footsteps, a visible threat closing in."
+    visual_goal: "Peak motion and tension"
+    sound_goal: "Drum hits, low tension strings, sharp impacts"
+
+  - time_start: 175
+    time_end: 235
+    label: uncertainty
+    beat: "The runner reaches a train station or bridge, looks back once, then keeps moving. The threat is not fully revealed."
+    visual_goal: "Create suspense and a false sense of control"
+    sound_goal: "High-end SFX and minimal music"
+
+  - time_start: 235
+    time_end: 322
+    label: reveal_approach
+    beat: "A red glow, blue reflections, and sharp movement reveal the danger approaching from behind or across the skyline."
+    visual_goal: "Visual reveal without explanatory text"
+    sound_goal: "Dynamic music rise, siren clipping"
+
+  - time_start: 322
+    time_end: 405
+    label: final_run
+    beat: "The runner hits a final route: stairs, alley, rooftop, bridge, tunnel. The city becomes a maze."
+    visual_goal: "Crescendo and full momentum"
+    sound_goal: "Minimal but intense: machine hum, footsteps, deep tension"
+
+  - time_start: 405
+    time_end: 470
+    label: payoff
+    beat: "The threat is briefly exposed, then the runner escapes through a final visually satisfying transition. The city goes quiet."
+    visual_goal: "Release, clarity, emotional completion"
+    sound_goal: "Music resolves, ambience returns, rain softens"
+
+  - time_start: 470
+    time_end: 510
+    label: end_tag
+    beat: "Final frame: empty street, neon reflection, wet pavement, distant light. No explanation."
+    visual_goal: "A memorable visual last shot"
+    sound_goal: "Tail of ambience or a single low hum"
+
+story_principles:
+  - no dialogue
+  - no explanatory narration
+  - sound design drives tension
+  - movement and atmosphere carry emotion
+  - payoff must feel earned, not random
+
+visual_reference_mood:
+  - dark cinematic urban chase sequences
+  - rain, neon reflections, emergency lights
+  - night city with empty streets and compressed spaces
+  - handheld camera urgency paired with smooth cinematic transitions

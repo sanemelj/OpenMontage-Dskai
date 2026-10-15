@@ -1,0 +1,36 @@
+name: urban-thriller-render
+canvas:
+  width: 2560
+  height: 1080
+  aspect_ratio: "21:9"
+framerate: 24
+codec: h264
+container: mp4
+color_grade: filmic_noir
+audio:
+  channels: stereo
+  normalization: true
+  loudness_target_lufs: -14
+  duck_music_under_sfx: true
+
+edit_style:
+  cuts_per_minute: 8-12
+  motion_focus: yes
+  text_overlay: minimal
+  typography: subtle and sparse
+
+render_profile:
+  title_card_mode: overlay
+  use_letterbox: true
+  grain_amount: low
+  vignette: slight
+  contrast: high
+  shadows: deep_blue
+  highlight_tone: warm_amber
+
+shorts_profile:
+  aspect_ratio: "9:16"
+  resolution: "1080x1920"
+  clips: 4
+  average_duration_seconds: 30
+  extraction_method: key_beats
