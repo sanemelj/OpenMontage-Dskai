@@ -3,6 +3,7 @@
 **Dènye mizajou:** 2026-10-15
 
 ## NOUVO (2026-10-15): Google Flow sou laptop la
+- **DESIZYON: pou kounye a SÈLMAN Google Flow.** Pa itilize Modal (GPU), Kaggle, ni rann 2D/3D sou CPU. Pa lanse okenn jenerasyon Qwen/Kandinsky.
 - Videyo yo ap fèt nan **Google Flow** (Veo 3.1 Lite, 720p, apre sa upscale), pa nan API a: kredi Flow koute 2–4 fwa mwens.
   - Lite = 10 kredi/klip 8 s sou Pro (5 kredi sou Ultra). Imaj Nano Banana yo gratis → keyframe yo fèt nan Flow, pa sou Modal.
   - Plan: Pro + 50 kredi gratis chak jou + top-up 2,500 kredi ($25, valab 12 mwa). Ultra 5x sèlman si nou fè ~1 epizòd chak jou (~2,250 klip/mwa).
