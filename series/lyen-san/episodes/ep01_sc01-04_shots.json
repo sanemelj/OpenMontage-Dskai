@@ -1,0 +1,345 @@
+{
+ "episode": "ep01",
+ "segment": "sc01-04",
+ "look": "Teal and amber color grade, blue and red police light accents. Shot on ARRI Alexa 35 with Cooke anamorphic lens, 2.39:1 cinematic framing, Kodak Vision3 500T film grain, shallow depth of field, natural dark skin tones well lit, premium streaming drama cinematography.",
+ "refs": {
+  "SARAH_T": "characters/sarah/sarah_tactical_s1.png",
+  "DANY": "characters/dany/dany_s1.png",
+  "GIRL": "characters/girl/girl_s1.png",
+  "K1": "characters/kidnapper1/k1_s1.png",
+  "K2": "characters/kidnapper2/k2_s1.png",
+  "K3": "characters/kidnapper3/k3_s1.png",
+  "ST": "locations/delmas_street/delmas_street_night_v2.png",
+  "COR": "locations/kidnap_house/corridor.png",
+  "ROOM": "locations/kidnap_house/back_room.png",
+  "NV": "props/bracelet_nv/bracelet.png"
+ },
+ "shots": [
+  {
+   "id": "1.1",
+   "refs": [
+    "ST"
+   ],
+   "frame": "Wide high establishing shot of the street in the reference image at night in light rain, police pickup with flashing red and blue lights in front of the unfinished house",
+   "motion": "Slow aerial drone descent toward the street, rain falling, police lights reflecting on wet asphalt",
+   "set": "street"
+  },
+  {
+   "id": "1.2",
+   "refs": [
+    "SARAH_T",
+    "ST"
+   ],
+   "frame": "Medium shot: three police officers in black tactical gear pressed against a concrete wall in the rainy street, the woman from image 1 at the back of the line, helmet on",
+   "motion": "The officers wait, rain dripping from helmets, the woman checks her rifle",
+   "set": "street"
+  },
+  {
+   "id": "1.3",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Close-up of the woman from image 1 wearing her tactical helmet, rain running down her face, calm focused eyes, red and blue light flickering on her skin",
+   "motion": "She breathes slowly, eyes fixed forward, rain on her face",
+   "set": "street"
+  },
+  {
+   "id": "1.4",
+   "refs": [
+    "DANY"
+   ],
+   "frame": "Close-up of the man from image 1 inside a police vehicle at night, glowing thermal camera screen lighting his glasses, radio handset to his mouth",
+   "motion": "He speaks into the radio, eyes on the thermal screen",
+   "line": "Kamera tèmik : trois moun an-dan. Yon ti-moun nan chanm dèyè a.",
+   "who": "He",
+   "set": "car"
+  },
+  {
+   "id": "1.5",
+   "refs": [
+    "SARAH_T",
+    "ST"
+   ],
+   "frame": "Medium close-up of the woman from image 1 in tactical gear against the wall in the rainy street, pressing the radio on her shoulder",
+   "motion": "She speaks low into her shoulder radio",
+   "line": "Mwin antré an prémié.",
+   "who": "She",
+   "set": "street"
+  },
+  {
+   "id": "1.6",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Extreme close-up of a black tactical gloved hand raised showing three fingers, rain, red and blue light",
+   "motion": "The gloved hand counts down three, two, one, then closes into a fist",
+   "set": "street"
+  },
+  {
+   "id": "2.1",
+   "refs": [],
+   "frame": "Medium shot looking down the narrow concrete corridor toward a closed wooden front door at the far end, nobody in frame, dust in the air",
+   "motion": "The door bursts open violently, splinters and smoke fly, flashlight beams cut through the haze",
+   "set": "corridor"
+  },
+  {
+   "id": "2.2",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Handheld medium shot: the woman from the reference image in black tactical gear and helmet stepping into the narrow concrete corridor, rifle raised, weapon-mounted flashlight beam cutting through dust, she fills the right half of the frame",
+   "motion": "She advances quickly and carefully, sweeping the corridor with her flashlight, handheld camera",
+   "set": "corridor"
+  },
+  {
+   "id": "2.3",
+   "refs": [
+    "K1"
+   ],
+   "frame": "Medium shot: the big bearded man with short dreadlocks from the reference image bursting out of a side doorway in the narrow concrete corridor, raising a machete, he fills the frame",
+   "motion": "He lunges forward swinging the machete, aggressive",
+   "set": "corridor"
+  },
+  {
+   "id": "2.4",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Close shot in the narrow concrete corridor: the woman from the reference image in black tactical gear and helmet ducks low with empty gloved hands raised, while a big attacker's arm swings a machete just above her helmet from the left edge of frame",
+   "motion": "She ducks fast as the blade swings over her head, fast motion",
+   "set": "corridor"
+  },
+  {
+   "id": "2.5",
+   "refs": [
+    "SARAH_T",
+    "K1"
+   ],
+   "frame": "Medium shot in the narrow concrete corridor: the woman from image 1 in tactical gear drives her elbow into the face of the bearded man from image 2, pinning him against the block wall",
+   "motion": "She drives her elbow into his face, he slams against the wall and falls to the floor, realistic fight choreography",
+   "set": "corridor"
+  },
+  {
+   "id": "2.6",
+   "refs": [
+    "K2"
+   ],
+   "frame": "Medium shot of the young man in the red basketball jersey from the reference image, standing at the end of the narrow concrete corridor, firing a pistol toward camera, bright muzzle flash",
+   "motion": "He fires the pistol repeatedly, muzzle flashes lighting the corridor",
+   "set": "corridor"
+  },
+  {
+   "id": "2.7",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Medium shot of the woman from the reference image in black tactical gear crouching behind an old white refrigerator in the corridor, rifle held close, bullets sparking off the refrigerator",
+   "motion": "Bullets hit the refrigerator, sparks and dust, she stays covered and breathes",
+   "set": "corridor"
+  },
+  {
+   "id": "2.8",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Low angle at floor level: the woman from the reference image in black tactical gear sliding on her side across the dusty concrete floor of the corridor, rifle aimed forward",
+   "motion": "She slides on the floor and fires one controlled shot",
+   "set": "corridor"
+  },
+  {
+   "id": "2.9",
+   "refs": [
+    "K2"
+   ],
+   "frame": "Medium shot of the young man in the red basketball jersey from the reference image in the narrow concrete corridor, collapsing and dropping his pistol, clutching his leg",
+   "motion": "He collapses holding his leg, pistol falling to the floor",
+   "set": "corridor"
+  },
+  {
+   "id": "2.10",
+   "refs": [
+    "K3"
+   ],
+   "frame": "Medium shot of the man with the rooster neck tattoo and faded tank top from the reference image running across the back room toward the plastic-covered window",
+   "motion": "He sprints toward the window, desperate",
+   "set": "room"
+  },
+  {
+   "id": "2.11",
+   "refs": [
+    "SARAH_T",
+    "K3"
+   ],
+   "frame": "Medium shot in the back room: the woman from image 1 in tactical gear tackling the man with the rooster neck tattoo from image 2, both crashing down onto the concrete floor next to the mattress",
+   "motion": "She leaps and tackles him, they crash through the table onto the floor",
+   "set": "room"
+  },
+  {
+   "id": "2.12",
+   "refs": [
+    "SARAH_T",
+    "K3"
+   ],
+   "frame": "Close shot of a hand-to-hand fight on the concrete floor of the back room: the woman from image 1 in tactical gear grappling with the man with the rooster neck tattoo from image 2",
+   "motion": "Fast close combat, punches and a knee strike, realistic and brutal",
+   "set": "room"
+  },
+  {
+   "id": "2.13",
+   "refs": [
+    "SARAH_T",
+    "K3"
+   ],
+   "frame": "Medium shot in the back room: the woman from image 1 in tactical gear kneels on the back of the man from image 2 and locks his arm, his face pressed to the concrete floor",
+   "motion": "She twists his arm into a lock, he grimaces against the floor",
+   "set": "room"
+  },
+  {
+   "id": "2.14",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Tight close-up of the woman from the reference image in tactical gear, helmet slightly askew, out of breath, looking down at a suspect below frame. Tight close-up, her face fills most of the frame, background a soft dark out-of-focus blur of grey concrete with faint red and blue light.",
+   "motion": "She shouts a sharp command, breathing hard",
+   "line": "Pa bou-jé !",
+   "who": "She",
+   "set": "room"
+  },
+  {
+   "id": "2.15",
+   "refs": [
+    "SARAH_T",
+    "K3"
+   ],
+   "frame": "Extreme close-up on the dusty concrete floor of the back room: black tactical gloved hands of the woman from image 1 snapping steel handcuffs onto the wrists of the man from image 2, his rooster neck tattoo and faded tank top visible, face pressed to the floor",
+   "motion": "The handcuffs click shut",
+   "set": "room"
+  },
+  {
+   "id": "3.1",
+   "refs": [
+    "GIRL"
+   ],
+   "frame": "Wide shot of the back room: the little girl from the reference image sitting in the corner on the floor next to the mattress, blindfolded with a strip of cloth, hugging her knees",
+   "motion": "She trembles, frightened, in the dim light",
+   "set": "room"
+  },
+  {
+   "id": "3.2",
+   "refs": [
+    "SARAH_T",
+    "GIRL"
+   ],
+   "frame": "Medium shot in the back room: the woman from image 1 in tactical vest, helmet off, kneeling in front of the little girl from image 2, gently untying the blindfold from her eyes",
+   "motion": "She slowly removes the cloth from the girl's eyes",
+   "set": "room"
+  },
+  {
+   "id": "3.3",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Tight close-up of the woman from the reference image in tactical vest, kneeling, soft warm reassuring expression, looking slightly down. Bareheaded, no helmet anywhere in frame, braids clearly visible. No other people in frame.",
+   "motion": "She speaks softly and reassuringly",
+   "line": "Mwin sé po-lis. Ou an sé-ki-rité kou-nié a.",
+   "who": "She",
+   "set": "room"
+  },
+  {
+   "id": "3.4",
+   "refs": [
+    "GIRL"
+   ],
+   "frame": "Close-up of the little girl from the reference image sitting in the corner of the dim back room, tears in her eyes, looking up",
+   "motion": "She asks in a small trembling voice",
+   "line": "Man-man mwin… li la ?",
+   "who": "She",
+   "set": "room"
+  },
+  {
+   "id": "3.5",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Tight close-up of the woman from the reference image in tactical vest, helmet off, braids visible, frozen and silent, natural clear eyes with a hint of tears, warm bulb light on her face. Tight close-up, her face fills most of the frame, background a soft dark out-of-focus blur of grey concrete with faint red and blue light.",
+   "motion": "She freezes for a second, a flicker of pain in her eyes, silence",
+   "set": "room"
+  },
+  {
+   "id": "3.6",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Tight close-up of the woman from the reference image in tactical vest, giving a gentle tender smile, looking slightly down. Bareheaded, no helmet anywhere in frame, braids clearly visible. No other people in frame.",
+   "motion": "She smiles tenderly and answers",
+   "line": "Li ap tann ou dé-yò.",
+   "who": "She",
+   "set": "room"
+  },
+  {
+   "id": "4.1",
+   "refs": [
+    "DANY"
+   ],
+   "frame": "Medium shot in the back room: the man with glasses from the reference image wearing a black tactical police vest over his polo, kneeling by a cardboard box of stolen jewelry and phones, searching it with a flashlight",
+   "motion": "He sifts through the jewelry and phones with his gloved hand",
+   "set": "room"
+  },
+  {
+   "id": "4.2",
+   "refs": [
+    "NV"
+   ],
+   "frame": "Extreme close-up of the gold bracelet from the reference image lying among tangled cheap jewelry and phones inside a cardboard box, a flashlight beam making it glow, no people",
+   "motion": "The flashlight beam slides over the bracelet and it glows",
+   "set": "room"
+  },
+  {
+   "id": "4.3",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Tight close-up of the woman from the reference image in tactical vest, helmet off, braids visible, staring at something off screen, her face draining of color. Tight close-up, her face fills most of the frame, background a soft dark out-of-focus blur of grey concrete with faint red and blue light.",
+   "motion": "Her expression drains, her breath stops, shocked recognition",
+   "set": "room"
+  },
+  {
+   "id": "4.4",
+   "refs": [
+    "DANY",
+    "NV"
+   ],
+   "frame": "Medium shot in the back room: the man with glasses from image 1 wearing a black tactical police vest, kneeling by a cardboard box, turning toward camera and holding up the thin gold bangle bracelet from image 2",
+   "motion": "He looks up and asks",
+   "line": "Sarah ? Ou konnin bagaille sa a ?",
+   "who": "He",
+   "set": "room"
+  },
+  {
+   "id": "4.5",
+   "refs": [
+    "SARAH_T"
+   ],
+   "frame": "Extreme close-up of the woman from the reference image, eyes glistening with tears, whispering. Bareheaded, no helmet anywhere in frame, braids clearly visible. No other people in frame.",
+   "motion": "She whispers, barely audible, holding back tears",
+   "line": "Sé pou man-man mwin.",
+   "who": "She",
+   "set": "room"
+  },
+  {
+   "id": "4.6",
+   "refs": [
+    "NV"
+   ],
+   "frame": "Macro shot of the engraved initials N.V. on the gold bracelet from the reference image held in a black gloved palm, no face, very shallow depth of field",
+   "motion": "Slow rack focus onto the engraved initials",
+   "set": "room"
+  }
+ ],
+ "sets": {
+  "street": "Setting: exterior, night, light rain, a colorful residential street in Delmas, Port-au-Prince, wet asphalt reflecting red and blue police lights.",
+  "corridor": "Setting: interior, night, narrow unfinished concrete corridor with grey block walls, a flickering green fluorescent tube, plastic sheeting over a window, an old white refrigerator, dust floating in flashlight beams. Indoors, no rain, no street.",
+  "room": "Setting: interior, night, small unfinished concrete back room with bare grey walls, a single bare bulb, plastic-covered window, a mattress on the floor and a cardboard box of stolen jewelry; faint blue and red police light leaking through the window. Indoors, no rain, no street.",
+  "car": "Setting: interior of a police vehicle at night, rain on the windshield."
+ }
+}
